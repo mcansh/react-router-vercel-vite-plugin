@@ -1,0 +1,26 @@
+{
+  "name": "@mcansh/react-router-vercel-vite-plugin",
+  "version": "0.1.0",
+  "description": "",
+  "keywords": [],
+  "license": "MIT",
+  "author": "Logan McAnsh <logan@mcan.sh> (https://mcan.sh)",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup"
+  },
+  "devDependencies": {
+    "@total-typescript/tsconfig": "^1.0.4",
+    "tsup": "^8.3.6",
+    "vite": "^6.0.11"
+  }
+}

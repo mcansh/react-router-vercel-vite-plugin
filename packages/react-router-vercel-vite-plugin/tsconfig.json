@@ -1,0 +1,6 @@
+{
+  "extends": "@total-typescript/tsconfig/bundler/no-dom",
+  "compilerOptions": {
+    "forceConsistentCasingInFileNames": true
+  }
+}
