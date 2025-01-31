@@ -16,6 +16,7 @@
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
+    "prepublishOnly": "node --run build",
     "build": "tsup"
   },
   "devDependencies": {
