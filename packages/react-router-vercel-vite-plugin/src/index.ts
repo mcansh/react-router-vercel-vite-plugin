@@ -11,36 +11,53 @@ export function reactRouterVercelVitePlugin({
   return {
     name: "react-router-vercel-vite-plugin",
     enforce: "post",
+    apply: "build",
     config(config, env) {
+      config.ssr ||= {};
+      config.ssr.noExternal = true;
       if (env.isSsrBuild) {
         config.build ||= {};
         config.build.rollupOptions ||= {};
         config.build.rollupOptions.input = "./server/app.ts";
       }
-
-      if (env.command === "build") {
-        config.ssr ||= {};
-        config.ssr.noExternal = true;
-      }
     },
 
-    async buildEnd() {
+    sharedDuringBuild: true,
+
+    async closeBundle() {
+      this.info("Clearing .vercel directory");
       await fsp.rm(".vercel", { recursive: true }).catch(() => {});
 
+      this.info("Creating .vercel/static/output directory");
+      this.info("Creating .vercel/output/functions/index.func directory");
       await Promise.all([
         fsp.mkdir(".vercel/output/static", { recursive: true }),
         fsp.mkdir(".vercel/output/functions/index.func", { recursive: true }),
       ]);
 
-      await Promise.all([
-        fsp.writeFile(
-          ".vercel/output/functions/index.func/package.json",
-          JSON.stringify({
-            type: "module",
-          }),
-        ),
+      if (await fsp.stat("build/server").catch(() => null)) {
+        fsp
+          .cp("build/server", ".vercel/output/functions/index.func", {
+            recursive: true,
+          })
+          .then(() => {
+            this.info(
+              "Copied build/server to .vercel/output/functions/index.func",
+            );
+          });
+      }
 
-        fsp.writeFile(
+      await fsp
+        .writeFile(
+          ".vercel/output/functions/index.func/package.json",
+          JSON.stringify({ type: "module" }),
+        )
+        .then(() => {
+          this.info("Wrote .vercel/output/functions/index.func/index.js");
+        });
+
+      await fsp
+        .writeFile(
           ".vercel/output/functions/index.func/.vc-config.json",
           JSON.stringify({
             runtime: nodeJsRuntime,
@@ -48,9 +65,15 @@ export function reactRouterVercelVitePlugin({
             launcherType: "Nodejs",
             shouldAddHelpers: true,
           }),
-        ),
+        )
+        .then(() => {
+          this.info(
+            "Wrote .vercel/output/functions/index.func/.vc-config.json",
+          );
+        });
 
-        fsp.writeFile(
+      await fsp
+        .writeFile(
           ".vercel/output/config.json",
           JSON.stringify({
             version: 3,
@@ -66,19 +89,19 @@ export function reactRouterVercelVitePlugin({
               { src: "/(.*)", dest: "/" },
             ],
           }),
-        ),
-      ]);
-
-      if (await fsp.stat("build/client/").catch(() => null)) {
-        await fsp.cp("build/client/", ".vercel/output/static", {
-          recursive: true,
+        )
+        .then(() => {
+          this.info("Wrote .vercel/output/config.json");
         });
-      }
 
-      if (await fsp.stat("build/server/").catch(() => null)) {
-        fsp.cp("build/server/", ".vercel/output/functions/index.func", {
-          recursive: true,
-        });
+      if (await fsp.stat("build/client").catch(() => null)) {
+        await fsp
+          .cp("build/client", ".vercel/output/static", {
+            recursive: true,
+          })
+          .then(() => {
+            this.info("Copied build/client to .vercel/output/static");
+          });
       }
     },
   };
