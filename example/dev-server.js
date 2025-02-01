@@ -6,11 +6,9 @@ const app = express();
 app.disable("x-powered-by");
 
 console.log("Starting development server");
-const viteDevServer = await import("vite").then((vite) =>
-  vite.createServer({
-    server: { middlewareMode: true },
-  }),
-);
+const viteDevServer = await import("vite").then((vite) => {
+  return vite.createServer({ server: { middlewareMode: true } });
+});
 app.use(viteDevServer.middlewares);
 app.use(async (req, res, next) => {
   try {

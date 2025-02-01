@@ -1,6 +1,7 @@
 {
   "name": "root",
   "private": true,
+  "type": "module",
   "scripts": {
     "format": "prettier --write . --ignore-path .gitignore --ignore-unknown"
   },
