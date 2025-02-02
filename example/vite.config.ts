@@ -9,6 +9,6 @@ export default defineConfig({
     tailwindcss(),
     reactRouter(),
     tsconfigPaths(),
-    reactRouterVercelVitePlugin(),
+    reactRouterVercelVitePlugin({ nodeJsRuntime: `nodejs22.x` }),
   ],
 });
