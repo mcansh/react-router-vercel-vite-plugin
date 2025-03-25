@@ -24,6 +24,6 @@
     "@arethetypeswrong/cli": "^0.17.3",
     "@total-typescript/tsconfig": "^1.0.4",
     "tsup": "^8.3.6",
-    "vite": "^6.0.11"
+    "vite": "^6.0.12"
   }
 }
